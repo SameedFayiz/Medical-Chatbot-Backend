@@ -1,6 +1,6 @@
 const app = require("express");
 const router = app.Router();
-const UserModal = require("../model/users");
+const UserModel = require("../model/users");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
@@ -8,7 +8,7 @@ require("dotenv").config();
 // Get all users
 router.get("/", async (req, res) => {
   try {
-    const users = await UserModal.find();
+    const users = await UserModel.find();
     res.status(200).send({
       status: 200,
       error: false,
@@ -25,7 +25,7 @@ router.get("/", async (req, res) => {
 // Get a single user
 router.get("/:id", async (req, res) => {
   try {
-    const user = await UserModal.findById(req.params.id);
+    const user = await UserModel.findById(req.params.id);
     if (!user) {
       let error = Error("User not found");
       error.code = 404;
@@ -46,7 +46,7 @@ router.get("/:id", async (req, res) => {
 // Get a single user by email
 router.get("/findByEmail/:email", async (req, res) => {
   try {
-    const user = await UserModal.findOne({ email: req.params.email });
+    const user = await UserModel.findOne({ email: req.params.email });
     if (!user) {
       let error = Error("User not found");
       error.code = 404;
@@ -70,7 +70,7 @@ router.get("/findByEmail/:email", async (req, res) => {
 //Create a user
 router.post("/", async (req, res) => {
   try {
-    const userCheck = await UserModal.findOne({ email: req.body.email });
+    const userCheck = await UserModel.findOne({ email: req.body.email });
     if (userCheck) {
       let error = Error("Email already in use");
       error.code = 403;
@@ -81,7 +81,7 @@ router.post("/", async (req, res) => {
     const hash = bcrypt.hashSync(req.body.password, salt);
     req.body.password = hash;
 
-    const user = await UserModal.create({ ...req.body });
+    const user = await UserModel.create({ ...req.body });
     user.password = undefined;
     res
       .status(201)
@@ -99,7 +99,7 @@ router.post("/", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await UserModal.findOne({ email: email });
+    const user = await UserModel.findOne({ email: email });
     if (!user) {
       let error = Error("This email doesn't Exist");
       error.code = 404;
@@ -135,13 +135,13 @@ router.post("/login", async (req, res) => {
 //Delete a user
 router.delete("/:id", async (req, res) => {
   try {
-    const user = await UserModal.findById(req.params.id);
+    const user = await UserModel.findById(req.params.id);
     if (!user) {
       let error = Error("User Not Found");
       error.code = 404;
       throw error;
     }
-    await UserModal.deleteOne({ _id: req.params.id });
+    await UserModel.deleteOne({ _id: req.params.id });
     res
       .status(200)
       .send({ status: 200, error: false, message: "User deleted" });
@@ -158,7 +158,7 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   req.body.password = undefined;
   try {
-    const user = await UserModal.findByIdAndUpdate(
+    const user = await UserModel.findByIdAndUpdate(
       req.params.id,
       { ...req.body },
       { new: true }
