@@ -70,14 +70,14 @@ router.get("/findByEmail/:email", async (req, res) => {
 //Create a user
 router.post("/", async (req, res) => {
   try {
-    const userCheck = await UserModel.findOne({ email: req.body.email });
+    let userCheck = await UserModel.findOne({ email: req.body.email });
     if (userCheck) {
       let error = Error("Email already in use");
       error.code = 403;
       throw error;
     }
-    const saltRounds = 10;
-    const salt = bcrypt.genSaltSync(saltRounds);
+    let saltRounds = 10;
+    let salt = bcrypt.genSaltSync(saltRounds);
     const hash = bcrypt.hashSync(req.body.password, salt);
     req.body.password = hash;
 
@@ -97,7 +97,7 @@ router.post("/", async (req, res) => {
 
 //Authenticate and login a user
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
   try {
     const user = await UserModel.findOne({ email: email });
     if (!user) {
@@ -105,7 +105,7 @@ router.post("/login", async (req, res) => {
       error.code = 404;
       throw error;
     }
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    let isPasswordValid = bcrypt.compareSync(password, user.password);
     if (!isPasswordValid) {
       let error = Error("Password is not valid");
       error.code = 400;
@@ -135,7 +135,7 @@ router.post("/login", async (req, res) => {
 //Delete a user
 router.delete("/:id", async (req, res) => {
   try {
-    const user = await UserModel.findById(req.params.id);
+    let user = await UserModel.findById(req.params.id);
     if (!user) {
       let error = Error("User Not Found");
       error.code = 404;

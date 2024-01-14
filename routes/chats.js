@@ -6,7 +6,7 @@ require("dotenv").config();
 // Get all chats
 router.get("/", async (req, res) => {
   try {
-    const chats = await ChatModel.find().populate("user").exec();
+    const chats = await ChatModel.find();
     res.status(200).send({
       status: 200,
       error: false,
@@ -23,7 +23,10 @@ router.get("/", async (req, res) => {
 // Get a single chat
 router.get("/:id", async (req, res) => {
   try {
-    const chat = await ChatModel.findById(req.params.id);
+    const chat = await ChatModel.findById(req.params.id)
+      .populate("user")
+      .exec();
+
     if (!chat) {
       let error = Error("chat not found");
       error.code = 404;
@@ -47,11 +50,6 @@ router.get("/findByUserId/:id", async (req, res) => {
     const chats = await ChatModel.find({ user: req.params.id })
       .populate("user")
       .exec();
-    if (!chats) {
-      let error = Error("chats not found");
-      error.code = 404;
-      throw error;
-    }
     res.status(200).send({
       status: 200,
       error: false,
@@ -69,7 +67,7 @@ router.get("/findByUserId/:id", async (req, res) => {
 
 //Create a chat
 router.post("/", async (req, res) => {
-  const initialMessage = "Hey there user, feel free to ask any questions.";
+  let initialMessage = "Hey there user, feel free to ask any questions.";
   try {
     let limit = await ChatModel.find({ user: req.body.userId })
       .populate("user")
@@ -99,22 +97,33 @@ router.post("/", async (req, res) => {
 
 //Send a message
 router.post("/sendMessage", async (req, res) => {
-  const { chatId, message } = req.body;
+  let { chatId, message } = req.body;
   try {
-    const chat = await ChatModel.findById(chatId);
+    const chat = await ChatModel.findById(chatId).populate("user").exec();
     if (!chat) {
       let error = Error("This chat doesn't Exist");
       error.code = 404;
       throw error;
     }
-    if (condition) {
-    }
-    //   Interaction with bot
 
-    // let user = new messageSchema({ message: message });
-    // chat.userMessages.push(user);
-    // // let bot = new messageSchema({ message: message });
-    // chat.botMessages.push(bot);
+    //   Interaction with bot
+    // let reqBody = { query: message };
+    // const query = await fetch(process.env.chatBotURL, {
+    //   method: "POST",
+    //   body: JSON.stringify(reqBody),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // });
+    // let botRes = await query.json();
+
+    // if (false) {
+    //   throw Error;
+    // }
+    let botRes = { response: "hey this is my response" };
+
+    chat.userMessages.push({ from: "user", message: message });
+    chat.botMessages.push({ from: "bot", message: botRes.response });
     await chat.save();
 
     res.status(201).send({
@@ -135,7 +144,7 @@ router.post("/sendMessage", async (req, res) => {
 //Delete a chat
 router.delete("/:id", async (req, res) => {
   try {
-    const chat = await ChatModel.findById(req.params.id);
+    let chat = await ChatModel.findById(req.params.id);
     if (!chat) {
       let error = Error("chat Not Found");
       error.code = 404;
@@ -153,31 +162,5 @@ router.delete("/:id", async (req, res) => {
     });
   }
 });
-
-//Update a chat
-// router.put("/:id", async (req, res) => {
-//   req.body.password = undefined;
-//   try {
-//     const chat = await ChatModel.findByIdAndUpdate(
-//       req.params.id,
-//       { ...req.body },
-//       { new: true }
-//     );
-//     if (!chat) {
-//       let error = Error("chat Not Found");
-//       error.code = 404;
-//       throw error;
-//     }
-//     res
-//       .status(201)
-//       .send({ status: 201, error: false, message: "User Updated", user });
-//   } catch (error) {
-//     res.status(error.code || 500).send({
-//       status: error.code || 500,
-//       error: true,
-//       message: error.message || "Internal server error",
-//     });
-//   }
-// });
 
 module.exports = router;
