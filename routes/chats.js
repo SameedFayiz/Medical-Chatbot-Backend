@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
 // Get a single chat
 router.get("/:id", async (req, res) => {
   try {
-    const chat = await ChatModel.findById(req.params.id)
+    const chat = await ChatModel.findById(req.params.id);
     if (!chat) {
       let error = Error("chat not found");
       error.code = 404;
@@ -73,7 +73,7 @@ router.post("/", async (req, res) => {
   try {
     let limit = await ChatModel.find({ user: req.body.userId })
       .populate("user")
-      .exec();;
+      .exec();
     if (limit.length >= 3) {
       let error = Error("Maximum chats limit has reached");
       error.code = 403;
@@ -81,7 +81,7 @@ router.post("/", async (req, res) => {
     }
     const chat = await ChatModel.create({
       user: req.body.userId,
-      botMessages: [{ message: initialMessage }],
+      botMessages: [{ from: "bot", message: initialMessage }],
       userMessages: [],
     });
 
