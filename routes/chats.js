@@ -97,7 +97,7 @@ router.post("/", async (req, res) => {
 
 //Send a message
 router.post("/sendMessage", async (req, res) => {
-  let { chatId, message, static } = req.body;
+  let { chatId, message, staticRes } = req.body;
   try {
     const chat = await ChatModel.findById(chatId).populate("user").exec();
     if (!chat) {
@@ -108,7 +108,7 @@ router.post("/sendMessage", async (req, res) => {
 
     //   Interaction with bot
     let botRes = null;
-    if (static) {
+    if (staticRes) {
       botRes = { response: "hey this is my response" };
     } else {
       let reqBody = { query: message };
