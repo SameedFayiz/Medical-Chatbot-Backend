@@ -107,20 +107,20 @@ router.post("/sendMessage", async (req, res) => {
     }
 
     //   Interaction with bot
-    // let reqBody = { query: message };
-    // const query = await fetch(process.env.chatBotURL, {
-    //   method: "POST",
-    //   body: JSON.stringify(reqBody),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // });
-    // let botRes = await query.json();
+    let reqBody = { query: message };
+    const query = await fetch(process.env.chatBotURL, {
+      method: "POST",
+      body: JSON.stringify(reqBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    let botRes = await query.json();
 
-    // if (false) {
-    //   throw Error;
-    // }
-    let botRes = { response: "hey this is my response" };
+    if (false) {
+      throw Error;
+    }
+    // let botRes = { response: "hey this is my response" };
 
     chat.userMessages.push({ from: "user", message: message });
     chat.botMessages.push({ from: "bot", message: botRes.response });
