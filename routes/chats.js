@@ -118,6 +118,7 @@ router.post("/sendMessage", async (req, res) => {
         body: JSON.stringify(reqBody),
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
       });
       botRes = await query.json();
