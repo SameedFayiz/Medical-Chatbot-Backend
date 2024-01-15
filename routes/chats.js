@@ -97,7 +97,7 @@ router.post("/", async (req, res) => {
 
 //Send a message
 router.post("/sendMessage", async (req, res) => {
-  let { chatId, message } = req.body;
+  let { chatId, message, static } = req.body;
   try {
     const chat = await ChatModel.findById(chatId).populate("user").exec();
     if (!chat) {
@@ -107,23 +107,23 @@ router.post("/sendMessage", async (req, res) => {
     }
 
     //   Interaction with bot
-    let reqBody = { query: message };
-    const query = await fetch(process.env.chatBotURL, {
-      method: "POST",
-      body: JSON.stringify(reqBody),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    let botRes = await query.json();
-
-    if (false) {
-      throw Error;
+    let botRes = null;
+    if (static) {
+      botRes = { response: "hey this is my response" };
+    } else {
+      let reqBody = { query: message };
+      const query = await fetch(process.env.chatBotURL, {
+        method: "POST",
+        body: JSON.stringify(reqBody),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      botRes = await query.json();
     }
-    // let botRes = { response: "hey this is my response" };
 
     chat.userMessages.push({ from: "user", message: message });
-    chat.botMessages.push({ from: "bot", message: botRes.response });
+    chat.botMessages.push({ from: "bot", message: botRes?.response });
     await chat.save();
 
     res.status(201).send({
