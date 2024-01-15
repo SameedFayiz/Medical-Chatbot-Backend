@@ -114,7 +114,7 @@ router.post("/sendMessage", async (req, res) => {
       let reqBody = { query: message };
       const query = await fetch(process.env.chatBotURL, {
         method: "POST",
-        mode: "no-cors",
+        mode: "cors",
         body: JSON.stringify(reqBody),
         headers: {
           "Content-Type": "application/json",
