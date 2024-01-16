@@ -105,7 +105,6 @@ router.post("/sendMessage", async (req, res) => {
       error.code = 404;
       throw error;
     }
-
     //   Interaction with bot
     let botRes = null;
     if (staticRes) {
