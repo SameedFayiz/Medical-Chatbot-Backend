@@ -109,16 +109,25 @@ router.post("/sendMessage", async (req, res) => {
     //   Interaction with bot
     let botRes = null;
     if (staticRes) {
-      botRes = { response: "hey this is my response" };
+      botRes = {
+        response: `
+        Hello,
+        I'm here to assist you with medical information, but please note that I am not a substitute for professional medical advice, diagnosis, or treatment. Always consult with your healthcare provider for personalized guidance.
+        If you have an emergency, please call your local emergency number immediately.
+        
+        For general information, feel free to ask about symptoms, medications, or medical conditions. However, remember that my responses are based on available data and may not cover all individual cases.
+        Stay informed, stay healthy!
+        
+        Best,
+        Medical AI Chatbot 🤖`,
+      };
     } else {
       let reqBody = { query: message };
       const query = await fetch(process.env.chatBotURL, {
         method: "POST",
-        mode: "cors",
         body: JSON.stringify(reqBody),
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
         },
       });
       botRes = await query.json();
